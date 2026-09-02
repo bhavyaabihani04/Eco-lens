@@ -38,4 +38,54 @@ document.getElementById("logout-button").addEventListener("click", async functio
 
     loginSection.style.display = "block";
     dashboardSection.style.display = "none";
+
+    const articleForm = document.getElementById("article-form");
+const articleMessage = document.getElementById("article-message");
+
+articleForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    articleMessage.textContent = "Publishing...";
+
+    const title = document.getElementById("title").value;
+    const author = document.getElementById("author").value;
+    const category = document.getElementById("category").value;
+    const excerpt = document.getElementById("excerpt").value;
+    const content = document.getElementById("content").value;
+    const image_url = document.getElementById("image_url").value;
+
+    // Create a URL-friendly slug from the title
+    const slug = title
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+
+    const { data, error } = await supabase
+        .from("articles")
+        .insert([
+            {
+                title: title,
+                slug: slug,
+                author: author,
+                category: category,
+                excerpt: excerpt,
+                content: content,
+                image_url: image_url,
+                published: true
+            }
+        ]);
+
+    if (error) {
+        console.error(error);
+        articleMessage.textContent = "Error: " + error.message;
+        return;
+    }
+
+    articleMessage.textContent = "Article published successfully! 🎉";
+
+    articleForm.reset();
+
+    document.getElementById("author").value = "EcoLens";
+});
 });
