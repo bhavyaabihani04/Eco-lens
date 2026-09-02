@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>EcoLens Article</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="logo">EcoLens</div>
+
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#articles">Articles</a></li>
+        <li><a href="index.html#about">About</a></li>
+    </ul>
+
+</nav>
+
+
+<main class="article-page">
+
+    <div id="article-container">
+
+        <p>Loading article...</p>
+
+    </div>
+
+</main>
+
+
+<footer>
+
+    <h3>EcoLens</h3>
+
+    <p>
+        Contemporary thinking. Critical analysis. Compelling insights.
+    </p>
+
+</footer>
+
+
+<script type="module">
+
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+
+const supabaseUrl = "https://ownsemlvxsjlflbbqbgi.supabase.co";
+
+const supabaseKey = "sb_publishable_vp8K_9e3hEdvRd4_6-6UMA_RYFCbfyj";
+
+const supabase = createClient(
+    supabaseUrl,
+    supabaseKey
+);
+
+
+async function loadArticle() {
+
+    const container = document.getElementById("article-container");
+
+    // Get the article slug from the URL
+    const params = new URLSearchParams(window.location.search);
+
+    const slug = params.get("slug");
+
+
+    if (!slug) {
+
+        container.innerHTML = `
+            <h1>Article not found</h1>
+            <p>No article was specified.</p>
+            <a href="index.html">← Back to EcoLens</a>
+        `;
+
+        return;
+
+    }
+
+
+    // Find the article in Supabase
+    const { data: article, error } = await supabase
+        .from("articles")
+        .select("*")
+        .eq("slug", slug)
+        .eq("published", true)
+        .single();
+
+
+    if (error || !article) {
+
+        console.error("Article error:", error);
+
+        container.innerHTML = `
+            <h1>Article not found</h1>
+            <p>We couldn't find this article.</p>
+            <a href="index.html">← Back to EcoLens</a>
+        `;
+
+        return;
+
+    }
+
+
+    // Display the article
+    container.innerHTML = `
+
+        <p class="article-category">
+            ${article.category}
+        </p>
+
+        <h1>
+            ${article.title}
+        </h1>
+
+        <p class="article-author">
+            By ${article.author}
+        </p>
+
+        ${article.image_url ? `
+            <img
+                src="${article.image_url}"
+                alt="${article.title}"
+                class="article-image"
+            >
+        ` : ""}
+
+        <p class="article-excerpt">
+            ${article.excerpt}
+        </p>
+
+        <div class="article-content">
+            ${article.content.replace(/\n/g, "<br>")}
+        </div>
+
+        <a href="index.html" class="back-link">
+            ← Back to Articles
+        </a>
+
+    `;
+
+
+    // Change browser tab title
+    document.title = article.title + " | EcoLens";
+
+}
+
+
+loadArticle();
+
+</script>
+
+</body>
+</html>
