@@ -48,15 +48,41 @@
 
         <div id="dashboard-section" style="display:none;">
 
-            <h2>Dashboard</h2>
+    <h2>EcoLens Dashboard</h2>
 
-            <p>Welcome to the EcoLens admin panel.</p>
+    <button id="logout-button">Logout</button>
 
-            <button id="logout-button">
-                Logout
-            </button>
+    <hr>
 
-        </div>
+    <h3>Create New Article</h3>
+
+    <form id="article-form">
+
+        <label>Title</label><br>
+        <input type="text" id="title" required><br><br>
+
+        <label>Author</label><br>
+        <input type="text" id="author" value="EcoLens" required><br><br>
+
+        <label>Category</label><br>
+        <input type="text" id="category" placeholder="Economics" required><br><br>
+
+        <label>Excerpt</label><br>
+        <textarea id="excerpt" rows="3" required></textarea><br><br>
+
+        <label>Article Content</label><br>
+        <textarea id="content" rows="15" required></textarea><br><br>
+
+        <label>Image URL</label><br>
+        <input type="url" id="image_url" placeholder="https://..."><br><br>
+
+        <button type="submit">Publish Article</button>
+
+    </form>
+
+    <p id="article-message"></p>
+
+</div>
 
     </main>
 
