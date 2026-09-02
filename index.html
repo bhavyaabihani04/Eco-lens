@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -15,33 +17,39 @@
 <body>
 
 <nav class="navbar">
+
     <div class="logo">EcoLens</div>
 
     <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Articles</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Contact</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#articles">Articles</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
     </ul>
+
 </nav>
+
 
 <header class="hero">
 
     <div class="hero-content">
 
         <h1>
-             Ideas. Insights. Conversations.
+            Ideas. Insights. Conversations.
         </h1>
 
         <p>
             Exploring the economic, social, and policy issues shaping the world around us.
         </p>
 
-        <button>Explore Articles</button>
+        <button onclick="document.getElementById('articles').scrollIntoView({behavior:'smooth'})">
+            Explore Articles
+        </button>
 
     </div>
 
 </header>
+
 
 <section class="featured">
 
@@ -74,26 +82,134 @@
 
 </section>
 
-<section class="about">
+
+<!-- ARTICLES FROM SUPABASE -->
+
+<section class="articles-section" id="articles">
+
+    <h2>Latest Articles</h2>
+
+    <div id="articles-container">
+
+        <p>Loading articles...</p>
+
+    </div>
+
+</section>
+
+
+<section class="about" id="about">
 
     <h2>About EcoLens</h2>
 
     <p>
         EcoLens is a platform built by two economics students trying to make sense of a rapidly changing world. Through opinions, analysis, and honest conversations, we explore the ideas and issues shaping our future—one article at a time.
-
     </p>
 
 </section>
 
-<footer>
+
+<footer id="contact">
 
     <h3>EcoLens</h3>
 
     <p>
-        Contemporary thinking. Critical analysis. Compelling insights. 
+        Contemporary thinking. Critical analysis. Compelling insights.
     </p>
 
 </footer>
+
+
+<!-- SUPABASE + ARTICLE CODE -->
+
+<script type="module">
+
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+
+const supabaseUrl = "https://ownsemlvxsjlflbbqbgi.supabase.co";
+
+const supabaseKey = "sb_publishable_vp8K_9e3hEdvRd4_6-6UMA_RYFCbfyj";
+
+const supabase = createClient(
+    supabaseUrl,
+    supabaseKey
+);
+
+
+async function loadArticles() {
+
+    const container = document.getElementById("articles-container");
+
+    const { data, error } = await supabase
+        .from("articles")
+        .select("*")
+        .eq("published", true)
+        .order("created_at", { ascending: false });
+
+
+    if (error) {
+
+        console.error("Error loading articles:", error);
+
+        container.innerHTML =
+            "<p>Unable to load articles.</p>";
+
+        return;
+
+    }
+
+
+    if (!data || data.length === 0) {
+
+        container.innerHTML =
+            "<p>No articles have been published yet.</p>";
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    data.forEach(article => {
+
+        const articleCard = document.createElement("div");
+
+        articleCard.className = "article-card";
+
+
+        articleCard.innerHTML = `
+
+            <h3>${article.title}</h3>
+
+            <p class="article-meta">
+                ${article.category} · ${article.author}
+            </p>
+
+            <p>
+                ${article.excerpt}
+            </p>
+
+            <a href="article.html?slug=${article.slug}">
+                Read Article →
+            </a>
+
+        `;
+
+
+        container.appendChild(articleCard);
+
+    });
+
+}
+
+
+loadArticles();
+
+</script>
+
 
 </body>
 </html>
